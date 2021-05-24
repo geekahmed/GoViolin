@@ -34,8 +34,7 @@ stages {
                 script {
                     dockerImage = docker.build imagename
              }
-            }
-          
+        }
         }
         stage('Deploy Docker Image'){
             steps{
@@ -45,7 +44,7 @@ stages {
                     dockerImage.push('latest')
                 }                
             }
-
+        }
         }
         stage('Clean Docker Image'){
             steps{
@@ -53,7 +52,6 @@ stages {
                 sh "docker rmi $imagename:latest"
             }
         }
-
 
     }
 }
