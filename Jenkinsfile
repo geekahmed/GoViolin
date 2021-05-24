@@ -4,8 +4,10 @@ pipeline {
         go 'go-1.16'
     }
     environment {
-        GO111MODULE = 'on'
-
+        GO111MODULE=on
+        CGO_ENABLED=0
+        GOOS=linux
+        GOARCH=amd64
     }
 stages {
         stage('Compile') {
