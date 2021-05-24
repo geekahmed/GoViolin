@@ -6,18 +6,17 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
 
+
 # Move to working directory /goviolin
 WORKDIR /goviolin
 
 # Copy and download dependency using go mod
-COPY go.mod .
-COPY go.sum .
+COPY go.mod go.sum ./
+
 RUN go mod download
 
 # Copy the code into the container
-COPY . /
-
-RUN ls -la /
+COPY . .
 
 # Build the application
 RUN go build -o goviolin .
@@ -25,6 +24,7 @@ RUN go build -o goviolin .
 # Move to /dist directory as the place for resulting binary folder
 WORKDIR /dist
 
+RUN ls
 # Copy binary from build to main folder
 RUN cp /goviolin/goviolin .
 
