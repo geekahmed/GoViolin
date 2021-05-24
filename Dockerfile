@@ -15,7 +15,9 @@ COPY go.sum .
 RUN go mod download
 
 # Copy the code into the container
-COPY . .
+COPY . /
+
+RUN ls -la /
 
 # Build the application
 RUN go build -o goviolin .
