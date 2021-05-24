@@ -8,6 +8,9 @@ pipeline {
         CGO_ENABLED = '0'
         GOOS = 'linux'
         GOARCH = 'amd64'
+        imagename = "geekahmed/goviolin"
+        registryCredential = 'geekahmed-dockerhub'
+        dockerImage = ''
     }
 stages {
         stage('Installing Dependencies'){
@@ -26,11 +29,31 @@ stages {
                 sh 'go test ./... -coverprofile=coverage.txt'
             }
         }
-        stage('Code Analysis') {
-            steps {
-                sh 'curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b $GOPATH/bin v1.12.5'
-                sh 'golangci-lint run'
+        stage('Building Docker Image'){
+            steps{
+                script {
+                    dockerImage = docker.build imagename
+             }
+            }
+          
+        }
+        stage('Deploy Docker Image'){
+            steps{
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                    dockerImage.push("$BUILD_NUMBER")
+                    dockerImage.push('latest')
+                }                
+            }
+
+        }
+        stage('Clean Docker Image'){
+            steps{
+                sh "docker rmi $imagename:$BUILD_NUMBER"
+                sh "docker rmi $imagename:latest"
             }
         }
+
+
     }
 }
