@@ -10,6 +10,12 @@ pipeline {
         GOARCH = 'amd64'
     }
 stages {
+        stage('Installing Dependencies'){
+            steps {
+                sh 'go mod download'
+                sh 'go mod verify'
+            }
+        }
         stage('Compile') {
             steps {
                 sh 'go build'
@@ -22,7 +28,7 @@ stages {
         }
         stage('Code Analysis') {
             steps {
-                sh 'sudo curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b $GOPATH/bin v1.12.5'
+                sh 'curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b $GOPATH/bin v1.12.5'
                 sh 'golangci-lint run'
             }
         }
