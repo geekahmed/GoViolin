@@ -63,7 +63,7 @@ stages {
             steps{
                 dir('kubernetes'){
                     withAWS(region:'us-west-2', credentials:'geekahmed-aws'){
-                        sh 'kubectl apply -f app.yml'
+                        sh '$(which kubectl) apply -f app.yml'
                 }
             }
             }
@@ -73,7 +73,7 @@ stages {
             steps {
                 dir('kubernetes') {
                     withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
-                            sh "kubectl set image deployments/goviolin goviolin=geekahmed/goviolin:${BUILD_NUMBER}"
+                            sh "$(which kubectl) set image deployments/goviolin goviolin=geekahmed/goviolin:${BUILD_NUMBER}"
                         }
                     }
             }
@@ -98,7 +98,7 @@ stages {
             steps {
                 withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
                     sh '''
-                        HOST=$(kubectl get service service-goviolin | grep 'amazonaws.com' | awk '{print $4}')
+                        HOST=$($(which kubectl) get service service-goviolin | grep 'amazonaws.com' | awk '{print $4}')
                         curl $HOST -f
                     '''
                 }
