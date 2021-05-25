@@ -60,14 +60,13 @@ stages {
             }
         }        
             stage ('K8S Deploy') {
-       
-                kubernetesDeploy(
-                    configs: 'kubernets/app.yml',
-                    kubeconfigId: 'K8S',
-                    enableConfigSubstitution: true
-                    )           
-               
-            
+                steps{
+                    kubernetesDeploy(
+                        configs: 'kubernets/app.yml',
+                        kubeconfigId: 'K8S',
+                        enableConfigSubstitution: true
+                        )           
+                }
         }
     }
 }
