@@ -63,7 +63,7 @@ stages {
             steps{
                 dir('kubernetes'){
                     withAWS(region:'us-west-2', credentials:'geekahmed-aws'){
-                        sh '$(which kubectl) apply -f app.yml'
+                        sh '\$(which kubectl) apply -f app.yml'
                 }
             }
             }
@@ -73,7 +73,7 @@ stages {
             steps {
                 dir('kubernetes') {
                     withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
-                            sh "$(which kubectl) set image deployments/goviolin goviolin=geekahmed/goviolin:${BUILD_NUMBER}"
+                            sh "\$(which kubectl) set image deployments/goviolin goviolin=geekahmed/goviolin:${BUILD_NUMBER}"
                         }
                     }
             }
@@ -83,7 +83,7 @@ stages {
                 withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
                     sh '''
                         ATTEMPTS=0
-                        ROLLOUT_STATUS_CMD="kubectl rollout status deployment/goviolin"
+                        ROLLOUT_STATUS_CMD="\$(which kubectl) rollout status deployment/goviolin"
                         until $ROLLOUT_STATUS_CMD || [ $ATTEMPTS -eq 60 ]; do
                             $ROLLOUT_STATUS_CMD
                             ATTEMPTS=$((attempts + 1))
@@ -98,7 +98,7 @@ stages {
             steps {
                 withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
                     sh '''
-                        HOST=$($(which kubectl) get service service-goviolin | grep 'amazonaws.com' | awk '{print $4}')
+                        HOST=$(\$(which kubectl) get service service-goviolin | grep 'amazonaws.com' | awk '{print $4}')
                         curl $HOST -f
                     '''
                 }
