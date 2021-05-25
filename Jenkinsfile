@@ -59,55 +59,15 @@ stages {
                 }
             }
         }        
-        stage('Apply Deployment of GoViolin'){
-            steps{
-                dir('kubernetes'){
-                    withAWS(region:'us-west-2', credentials:'geekahmed-aws'){
-                        sh '\$(which kubectl) apply -f app.yml'
-                }
-            }
-            }
-
+            stage ('K8S Deploy') {
+       
+                kubernetesDeploy(
+                    configs: 'kubernets/app.yml',
+                    kubeconfigId: 'K8S',
+                    enableConfigSubstitution: true
+                    )           
+               
+            
         }
-        stage('Update deployment') {
-            steps {
-                dir('kubernetes') {
-                    withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
-                            sh "\$(which kubectl) set image deployments/goviolin goviolin=geekahmed/goviolin:${BUILD_NUMBER}"
-                        }
-                    }
-            }
-        }
-        stage('Wait for pods') {
-            steps {
-                withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
-                    sh '''
-                        ATTEMPTS=0
-                        ROLLOUT_STATUS_CMD="\$(which kubectl) rollout status deployment/goviolin"
-                        until $ROLLOUT_STATUS_CMD || [ $ATTEMPTS -eq 60 ]; do
-                            $ROLLOUT_STATUS_CMD
-                            ATTEMPTS=$((attempts + 1))
-                            sleep 10
-                        done
-                    '''
-                }
-            }
-        }
-
-        stage('Post deployment test') {
-            steps {
-                withAWS(region:'us-west-2', credentials:'geekahmed-aws') {
-                    sh '''
-                        HOST=$(\$(which kubectl) get service service-goviolin | grep 'amazonaws.com' | awk '{print $4}')
-                        curl $HOST -f
-                    '''
-                }
-            }
-        }   
-        stage("Prune docker") {
-            steps {
-                sh "docker system prune -f"
-            }
-        }     
     }
 }
